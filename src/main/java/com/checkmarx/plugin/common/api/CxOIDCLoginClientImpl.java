@@ -39,7 +39,7 @@ public class CxOIDCLoginClientImpl implements CxOIDCLoginClient {
         if(expirationTime == null){
             //Means
             isTokenExpired = true;
-        } else if(loginData.getAccessTokenExpirationInMillis() != null){
+        } else {
             isTokenExpired =  (expirationTime.compareTo(System.currentTimeMillis()) < 0 ) ? true : false;
         }
         return isTokenExpired;
