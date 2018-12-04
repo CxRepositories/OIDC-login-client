@@ -1,6 +1,9 @@
 package com.checkmarx.plugin.common.api;
 
 import com.checkmarx.plugin.common.CxOIDCConnector;
+import com.checkmarx.plugin.common.exceptions.CxRestClientException;
+import com.checkmarx.plugin.common.exceptions.CxRestLoginException;
+import com.checkmarx.plugin.common.exceptions.CxValidateResponseException;
 import com.checkmarx.plugin.common.restClient.CxServerImpl;
 import com.checkmarx.plugin.common.restClient.ICxServer;
 import com.checkmarx.plugin.common.webBrowsing.IOIDCWebBrowser;
@@ -31,17 +34,18 @@ public class CxOIDCLoginClientImpl implements CxOIDCLoginClient {
     }
 
     @Override
-    public boolean isTokenExpired() {
+    public boolean isTokenExpired(Long expirationTime) {
         boolean isTokenExpired = false;
-        if(loginData == null){
-            isTokenExpired = false;
+        if(expirationTime == null){
+            //Means
+            isTokenExpired = true;
         } else if(loginData.getAccessTokenExpirationInMillis() != null){
-            isTokenExpired =  (loginData.getAccessTokenExpirationInMillis().compareTo(System.currentTimeMillis()) < 0 ) ? true : false;
+            isTokenExpired =  (expirationTime.compareTo(System.currentTimeMillis()) < 0 ) ? true : false;
         }
         return isTokenExpired;
     }
 
-    public LoginData getAccessTokenFromRefreshToken(String refreshToken) throws Exception{
+    public LoginData getAccessTokenFromRefreshToken(String refreshToken) throws CxRestClientException, CxRestLoginException, CxValidateResponseException {
         return server.getAccessTokenFromRefreshToken(refreshToken);
     }
 }

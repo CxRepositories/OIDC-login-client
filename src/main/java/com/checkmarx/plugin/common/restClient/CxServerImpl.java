@@ -56,7 +56,7 @@ public class CxServerImpl implements ICxServer {
             validateTokenResponse(loginResponse, 200, FAIL_TO_VALIDATE_TOKEN_RESPONSE_ERROR);
             AccessTokenDTO jsonResponse = parseJsonFromResponse(loginResponse, AccessTokenDTO.class);
             Long accessTokenExpirationInMilli = getAccessTokenExpirationInMilli(jsonResponse.getExpiresIn());
-            return new LoginData(jsonResponse.getAccessToken(), jsonResponse.getRefreshToken(), accessTokenExpirationInMilli);
+            return new LoginData(jsonResponse.getAccessToken(), jsonResponse.getRefreshToken(), accessTokenExpirationInMilli, jsonResponse.getIdToken());
         } catch (IOException e) {
             throw new CxRestLoginException("Fail to login: " + e.getMessage());
         } finally {
@@ -79,9 +79,9 @@ public class CxServerImpl implements ICxServer {
             validateTokenResponse(loginResponse, 200, FAIL_TO_VALIDATE_TOKEN_RESPONSE_ERROR);
             AccessTokenDTO jsonResponse = parseJsonFromResponse(loginResponse, AccessTokenDTO.class);
             Long accessTokenExpirationInMilli = getAccessTokenExpirationInMilli(jsonResponse.getExpiresIn());
-            return new LoginData(jsonResponse.getAccessToken(), jsonResponse.getRefreshToken(), accessTokenExpirationInMilli);
+            return new LoginData(jsonResponse.getAccessToken(), jsonResponse.getRefreshToken(), accessTokenExpirationInMilli, jsonResponse.getIdToken());
         } catch (IOException e) {
-            throw new CxRestLoginException("Fail to get new access token from refresh token: " + e.getMessage());
+            throw new CxRestLoginException("Failed to get new access token from refresh token: " + e.getMessage());
         } finally {
             HttpClientUtils.closeQuietly(loginResponse);
         }
