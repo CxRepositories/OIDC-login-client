@@ -13,14 +13,11 @@ import java.net.URL;
 
 public class CxOIDCLoginClientImpl implements CxOIDCLoginClient {
 
-    private URL serverUrl;
     private String clientName;
-    private LoginData loginData = null;
     private ICxServer server;
 
 
     public CxOIDCLoginClientImpl(URL serverUrl, String clientName) {
-        this.serverUrl = serverUrl;
         this.clientName = clientName;
         this.server = new CxServerImpl(serverUrl.toString());
     }
@@ -29,13 +26,12 @@ public class CxOIDCLoginClientImpl implements CxOIDCLoginClient {
     public LoginData login() throws Exception {
         IOIDCWebBrowser webBrowser = new OIDCWebBrowser();
         CxOIDCConnector connector = new CxOIDCConnector(server, webBrowser, clientName);
-        loginData = connector.connect();
-        return loginData;
+        return connector.connect();
     }
 
     @Override
     public boolean isTokenExpired(Long expirationTime) {
-        boolean isTokenExpired = false;
+        boolean isTokenExpired;
         if(expirationTime == null){
             //Means
             isTokenExpired = true;
