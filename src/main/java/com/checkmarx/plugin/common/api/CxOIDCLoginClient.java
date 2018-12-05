@@ -3,6 +3,7 @@ package com.checkmarx.plugin.common.api;
 import com.checkmarx.plugin.common.exceptions.CxRestClientException;
 import com.checkmarx.plugin.common.exceptions.CxRestLoginException;
 import com.checkmarx.plugin.common.exceptions.CxValidateResponseException;
+import com.checkmarx.plugin.common.restClient.entities.Permissions;
 import com.checkmarx.plugin.common.webBrowsing.LoginData;
 
 public interface CxOIDCLoginClient {
@@ -12,4 +13,6 @@ public interface CxOIDCLoginClient {
     boolean isTokenExpired(Long expirationTime);
 
     LoginData getAccessTokenFromRefreshToken(String accessToken) throws CxRestClientException, CxRestLoginException, CxValidateResponseException;
+
+    Permissions getPermissions(String accessToken) throws CxValidateResponseException;
 }

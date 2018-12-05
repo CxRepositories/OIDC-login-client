@@ -1,6 +1,9 @@
 package com.checkmarx.plugin.common.restClient;
 
+import com.checkmarx.plugin.common.constants.Consts;
+import com.checkmarx.plugin.common.dto.UserInfoDTO;
 import com.checkmarx.plugin.common.exceptions.CxRestClientException;
+import com.checkmarx.plugin.common.restClient.entities.Permissions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.checkmarx.plugin.common.dto.AccessTokenDTO;
 import com.checkmarx.plugin.common.exceptions.CxRestLoginException;
@@ -14,8 +17,10 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import com.checkmarx.plugin.common.webBrowsing.LoginData;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,14 +33,20 @@ public class CxServerImpl implements ICxServer {
 
     private String serverURL;
     private String tokenEndpointURL;
+    private String userInfoURL;
     private HttpClient client;
     private List<Header> headers = new ArrayList<Header>();
     private String tokenEndpoint = ":8080/identity/connect/token";
+    private String userInfoEndpoint = ":8080"+Consts.USER_INFO_ENDPOINT;
     private static final String FAIL_TO_VALIDATE_TOKEN_RESPONSE_ERROR = " User authentication failed";
+    private static final String FAIL_TO_VALIDATE_USER_INFO_RESPONSE_ERROR = "User info failed";
+    private final Logger logger = Logger.getLogger("com.checkmarx.plugin.common.CxServerImpl");
+
 
     public CxServerImpl(String serverURL){
         this.serverURL = serverURL;
         this.tokenEndpointURL = serverURL + tokenEndpoint;
+        this.userInfoURL = serverURL + userInfoEndpoint;
         client = HttpClientBuilder.create().setDefaultHeaders(headers).build();
     }
 
@@ -53,10 +64,10 @@ public class CxServerImpl implements ICxServer {
                     .setEntity(TokenHTTPEntityBuilder.createGetAccessTokenFromCodeParamsEntity(code))
                     .build();
             loginResponse = client.execute(postRequest);
-            validateTokenResponse(loginResponse, 200, FAIL_TO_VALIDATE_TOKEN_RESPONSE_ERROR);
+            validateResponse(loginResponse, 200, FAIL_TO_VALIDATE_TOKEN_RESPONSE_ERROR);
             AccessTokenDTO jsonResponse = parseJsonFromResponse(loginResponse, AccessTokenDTO.class);
             Long accessTokenExpirationInMilli = getAccessTokenExpirationInMilli(jsonResponse.getExpiresIn());
-            return new LoginData(jsonResponse.getAccessToken(), jsonResponse.getRefreshToken(), accessTokenExpirationInMilli, jsonResponse.getIdToken());
+            return new LoginData(jsonResponse.getAccessToken(), jsonResponse.getRefreshToken(), accessTokenExpirationInMilli);
         } catch (IOException e) {
             throw new CxRestLoginException("Fail to login: " + e.getMessage());
         } finally {
@@ -76,15 +87,45 @@ public class CxServerImpl implements ICxServer {
                     .setEntity(TokenHTTPEntityBuilder.createGetAccessTokenFromRefreshTokenParamsEntity(refreshToken))
                     .build();
             loginResponse = client.execute(postRequest);
-            validateTokenResponse(loginResponse, 200, FAIL_TO_VALIDATE_TOKEN_RESPONSE_ERROR);
+            validateResponse(loginResponse, 200, FAIL_TO_VALIDATE_TOKEN_RESPONSE_ERROR);
             AccessTokenDTO jsonResponse = parseJsonFromResponse(loginResponse, AccessTokenDTO.class);
             Long accessTokenExpirationInMilli = getAccessTokenExpirationInMilli(jsonResponse.getExpiresIn());
-            return new LoginData(jsonResponse.getAccessToken(), jsonResponse.getRefreshToken(), accessTokenExpirationInMilli, jsonResponse.getIdToken());
+            return new LoginData(jsonResponse.getAccessToken(), jsonResponse.getRefreshToken(), accessTokenExpirationInMilli);
         } catch (IOException e) {
             throw new CxRestLoginException("Failed to get new access token from refresh token: " + e.getMessage());
         } finally {
             HttpClientUtils.closeQuietly(loginResponse);
         }
+    }
+
+    @Override
+    public Permissions getPermissionsFromUserInfo(String accessToken) throws CxValidateResponseException {
+        HttpUriRequest postRequest;
+        HttpResponse userInfoResponse = null;
+        Permissions permissions = null;
+        try {
+            headers.add(new BasicHeader(Consts.AUTHORIZATION_HEADER, Consts.BEARER + accessToken));
+            headers.add(new BasicHeader("Content-Length", "0"));
+            client = HttpClientBuilder.create().setDefaultHeaders(headers).build();
+            postRequest = RequestBuilder.post()
+                    .setUri(userInfoURL)
+                    .build();
+            userInfoResponse = client.execute(postRequest);
+            validateResponse(userInfoResponse, 200, FAIL_TO_VALIDATE_USER_INFO_RESPONSE_ERROR);
+            UserInfoDTO jsonResponse = parseJsonFromResponse(userInfoResponse, UserInfoDTO.class);
+            permissions = getPermissions(jsonResponse);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            HttpClientUtils.closeQuietly(userInfoResponse);
+        }
+        return permissions;
+    }
+
+    private Permissions getPermissions(UserInfoDTO jsonResponse) {
+        ArrayList<String> sastPermissions = jsonResponse.getSastPermissions();
+        return new Permissions(sastPermissions.contains(Consts.SAVE_SAST_SCAN), sastPermissions.contains(Consts.MANAGE_RESULTS_SEVERITY),
+                sastPermissions.contains(Consts.MANAGE_RESULTS_EXPLOITABILITY));
     }
 
     private Long getAccessTokenExpirationInMilli(int accessTokenExpirationInSec) {
@@ -93,9 +134,7 @@ public class CxServerImpl implements ICxServer {
         return currentTime + accessTokenExpInMilli;
     }
 
-
-
-    private static void validateTokenResponse(HttpResponse response, int status, String message) throws CxValidateResponseException {
+    private static void validateResponse(HttpResponse response, int status, String message) throws CxValidateResponseException {
         try {
             if (response.getStatusLine().getStatusCode() != status) {
                 String responseBody = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());

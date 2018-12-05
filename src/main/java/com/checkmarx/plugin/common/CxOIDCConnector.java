@@ -1,7 +1,7 @@
 package com.checkmarx.plugin.common;
 
 
-import com.checkmarx.plugin.common.constants.AccessTokenConsts;
+import com.checkmarx.plugin.common.constants.Consts;
 import com.checkmarx.plugin.common.restClient.ICxServer;
 import com.checkmarx.plugin.common.webBrowsing.AuthenticationData;
 import com.checkmarx.plugin.common.webBrowsing.IOIDCWebBrowser;
@@ -21,7 +21,7 @@ public class CxOIDCConnector {
     }
 
     public LoginData connect() throws Exception {
-        AuthenticationData authenticationData = webBrowser.browseAuthenticationData(cxServer.getServerURL() + AccessTokenConsts.PORT + AccessTokenConsts.AUTHORIZATION_ENDPOINT, clientName);
+        AuthenticationData authenticationData = webBrowser.browseAuthenticationData(cxServer.getServerURL() + Consts.PORT + Consts.AUTHORIZATION_ENDPOINT, clientName);
 
         if (authenticationData.wasCanceled) {
             return new LoginData(true);

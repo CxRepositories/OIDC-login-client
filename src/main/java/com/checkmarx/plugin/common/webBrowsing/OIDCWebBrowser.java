@@ -8,7 +8,7 @@ import com.teamdev.jxbrowser.chromium.events.LoadAdapter;
 import com.teamdev.jxbrowser.chromium.internal.Environment;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import com.teamdev.jxbrowser.chromium.swing.DefaultNetworkDelegate;
-import com.checkmarx.plugin.common.constants.AccessTokenConsts;
+import com.checkmarx.plugin.common.constants.Consts;
 import com.checkmarx.plugin.common.exceptions.CxRestLoginException;
 
 import javax.swing.*;
@@ -98,13 +98,13 @@ public class OIDCWebBrowser extends JFrame implements IOIDCWebBrowser  {
 
     private String getPostData() {
         StringBuilder sb = new StringBuilder();
-        sb.append(AccessTokenConsts.CLIENT_ID_KEY + "=" + AccessTokenConsts.CLIENT_ID_VALUE);
+        sb.append(Consts.CLIENT_ID_KEY + "=" + Consts.CLIENT_ID_VALUE);
         sb.append("&");
-        sb.append(AccessTokenConsts.SCOPE_KEY + "=" + AccessTokenConsts.SCOPE_VALUE);
+        sb.append(Consts.SCOPE_KEY + "=" + Consts.SCOPE_VALUE);
         sb.append("&");
-        sb.append(AccessTokenConsts.RESPONSE_TYPE_KEY + "="+ AccessTokenConsts.RESPONSE_TYPE_VALUE);
+        sb.append(Consts.RESPONSE_TYPE_KEY + "="+ Consts.RESPONSE_TYPE_VALUE);
         sb.append("&");
-        sb.append(AccessTokenConsts.REDIRECT_URI_KEY + "="+ AccessTokenConsts.URI_REDIRECT_VALUE);
+        sb.append(Consts.REDIRECT_URI_KEY + "="+ Consts.URI_REDIRECT_VALUE);
         return sb.toString();
     }
 
@@ -200,7 +200,7 @@ public class OIDCWebBrowser extends JFrame implements IOIDCWebBrowser  {
     }
 
     private boolean validateUrlResponse(FinishLoadingEvent event) {
-        return event.getValidatedURL().toLowerCase().contains(AccessTokenConsts.CODE_KEY);
+        return event.getValidatedURL().toLowerCase().contains(Consts.CODE_KEY);
     }
 
     private boolean hasErrors() {
@@ -211,7 +211,7 @@ public class OIDCWebBrowser extends JFrame implements IOIDCWebBrowser  {
         if (event.isMainFrame() && (validateUrlResponse(event)) && !hasErrors()) {
             String validatedURL = event.getValidatedURL();
             extractReturnedUrlParams(validatedURL);
-            response = new AuthenticationData(urlParamsMap.get(AccessTokenConsts.CODE_KEY));
+            response = new AuthenticationData(urlParamsMap.get(Consts.CODE_KEY));
         }
     }
 
