@@ -47,6 +47,10 @@ public class CxServerImpl implements ICxServer {
         this.serverURL = serverURL;
         this.tokenEndpointURL = serverURL + tokenEndpoint;
         this.userInfoURL = serverURL + userInfoEndpoint;
+        setClient();
+    }
+
+    private void setClient(){
         client = HttpClientBuilder.create().setDefaultHeaders(headers).build();
     }
 
@@ -58,6 +62,8 @@ public class CxServerImpl implements ICxServer {
         HttpUriRequest postRequest;
         HttpResponse loginResponse = null;
         try {
+            headers.clear();
+            setClient();
             postRequest = RequestBuilder.post()
                     .setUri(tokenEndpointURL)
                     .setHeader(HTTP.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED.toString())
@@ -81,6 +87,8 @@ public class CxServerImpl implements ICxServer {
         HttpUriRequest postRequest;
         HttpResponse loginResponse = null;
         try {
+            headers.clear();
+            setClient();
             postRequest = RequestBuilder.post()
                     .setUri(tokenEndpointURL)
                     .setHeader(HTTP.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED.toString())
