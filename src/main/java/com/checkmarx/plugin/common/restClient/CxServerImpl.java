@@ -75,7 +75,7 @@ public class CxServerImpl implements ICxServer {
             Long accessTokenExpirationInMilli = getAccessTokenExpirationInMilli(jsonResponse.getExpiresIn());
             return new LoginData(jsonResponse.getAccessToken(), jsonResponse.getRefreshToken(), accessTokenExpirationInMilli);
         } catch (IOException e) {
-            throw new CxRestLoginException("Fail to login: " + e.getMessage());
+            throw new CxRestLoginException("Failed to login: " + e.getMessage());
         } finally {
             HttpClientUtils.closeQuietly(loginResponse);
         }
