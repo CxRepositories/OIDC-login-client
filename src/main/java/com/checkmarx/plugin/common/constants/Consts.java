@@ -20,7 +20,7 @@ public class Consts {
     public static final String BEARER = "Bearer ";
     public static final String USER_INFO_ENDPOINT = "/identity/connect/userinfo";
     public static final String SAVE_SAST_SCAN = "save-sast-scan";
-    public static final String MANAGE_RESULTS_SEVERITY = "manage-result-severity";
+    public static final String MANAGE_RESULTS_COMMENT = "manage-result-comment";
     public static final String MANAGE_RESULTS_EXPLOITABILITY = "manage-result-exploitability";
 
 

@@ -3,12 +3,12 @@ package com.checkmarx.plugin.common.restClient.entities;
 public class Permissions {
 
     private boolean saveSastScan;
-    private boolean manageResultsSeverity;
+    private boolean manageResultsComment;
     private boolean manageResultsExploitability;
 
-    public Permissions(boolean saveSastScan, boolean manageResultsSeverity, boolean manageResultsExploitability) {
+    public Permissions(boolean saveSastScan, boolean manageResultsComment, boolean manageResultsExploitability) {
         this.saveSastScan = saveSastScan;
-        this.manageResultsSeverity = manageResultsSeverity;
+        this.manageResultsComment = manageResultsComment;
         this.manageResultsExploitability = manageResultsExploitability;
     }
 
@@ -16,8 +16,8 @@ public class Permissions {
         return saveSastScan;
     }
 
-    public boolean isManageResultsSeverity() {
-        return manageResultsSeverity;
+    public boolean isManageResultsComment() {
+        return manageResultsComment;
     }
 
     public boolean isManageResultsExploitability() {

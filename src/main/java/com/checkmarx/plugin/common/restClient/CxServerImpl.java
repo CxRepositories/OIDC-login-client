@@ -132,7 +132,7 @@ public class CxServerImpl implements ICxServer {
 
     private Permissions getPermissions(UserInfoDTO jsonResponse) {
         ArrayList<String> sastPermissions = jsonResponse.getSastPermissions();
-        return new Permissions(sastPermissions.contains(Consts.SAVE_SAST_SCAN), sastPermissions.contains(Consts.MANAGE_RESULTS_SEVERITY),
+        return new Permissions(sastPermissions.contains(Consts.SAVE_SAST_SCAN), sastPermissions.contains(Consts.MANAGE_RESULTS_COMMENT),
                 sastPermissions.contains(Consts.MANAGE_RESULTS_EXPLOITABILITY));
     }
 
