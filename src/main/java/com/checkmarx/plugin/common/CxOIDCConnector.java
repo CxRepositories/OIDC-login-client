@@ -21,7 +21,7 @@ public class CxOIDCConnector {
     }
 
     public LoginData connect() throws Exception {
-        AuthenticationData authenticationData = webBrowser.browseAuthenticationData(cxServer.getServerURL() + Consts.PORT + Consts.AUTHORIZATION_ENDPOINT, clientName);
+        AuthenticationData authenticationData = webBrowser.browseAuthenticationData(cxServer.getServerURL(), clientName);
 
         if (authenticationData.wasCanceled) {
             return new LoginData(true);
