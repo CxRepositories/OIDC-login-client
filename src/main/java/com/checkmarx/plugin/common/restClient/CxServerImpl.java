@@ -67,7 +67,7 @@ public class CxServerImpl implements ICxServer {
             postRequest = RequestBuilder.post()
                     .setUri(tokenEndpointURL)
                     .setHeader(HTTP.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED.toString())
-                    .setEntity(TokenHTTPEntityBuilder.createGetAccessTokenFromCodeParamsEntity(code))
+                    .setEntity(TokenHTTPEntityBuilder.createGetAccessTokenFromCodeParamsEntity(code, serverURL))
                     .build();
             loginResponse = client.execute(postRequest);
             validateResponse(loginResponse, 200, FAIL_TO_VALIDATE_TOKEN_RESPONSE_ERROR);
