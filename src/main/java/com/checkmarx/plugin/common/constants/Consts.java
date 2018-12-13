@@ -12,7 +12,6 @@ public class Consts {
     public static final String REDIRECT_URI_KEY = "redirect_uri";
     public static final String RESPONSE_TYPE_VALUE = "code";
     public static final String SCOPE_VALUE = "offline_access openid sast_api sast-permissions";
-    public static final String CLIENT_ID_VALUE = "plugin_client";
     public static final String AUTHORIZATION_ENDPOINT = "/identity/connect/authorize";
     public static final String PORT = ":8080";
     public static final String AUTHORIZATION_HEADER = "Authorization";

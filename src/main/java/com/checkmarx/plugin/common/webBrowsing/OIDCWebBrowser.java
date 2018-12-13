@@ -101,7 +101,7 @@ public class OIDCWebBrowser extends JFrame implements IOIDCWebBrowser  {
 
     private String getPostData() {
         StringBuilder sb = new StringBuilder();
-        sb.append(Consts.CLIENT_ID_KEY + "=" + Consts.CLIENT_ID_VALUE);
+        sb.append(Consts.CLIENT_ID_KEY + "=" + Consts.CLIENT_VALUE);
         sb.append("&");
         sb.append(Consts.SCOPE_KEY + "=" + Consts.SCOPE_VALUE);
         sb.append("&");
